@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chip Comparer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 1.1em;
+            color: #718096;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: #2d3748;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .chip-selector {
+            margin-bottom: 20px;
+        }
+
+        .dropdown-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .dropdown-button {
+            width: 100%;
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1em;
+            color: #2d3748;
+            transition: border-color 0.2s;
+        }
+
+        .dropdown-button:hover {
+            border-color: #667eea;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .dropdown-menu.active {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #f7fafc;
+        }
+
+        .dropdown-item input[type="checkbox"] {
+            cursor: pointer;
+        }
+
+        .selected-count {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        thead {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        tbody {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .converter-section {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .converter-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1em;
+            background: white;
+            cursor: pointer;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-card h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-value {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-label {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .metric-details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #4a5568;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .number {
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .no-chips-message {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Chip Comparer</h1>
+        <p class="subtitle">Compare leading Nvidia, Google TPU, and Amazon Trainium AI accelerators</p>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('comparison')">Comparison Table</button>
+            <button class="tab" onclick="switchTab('converter')">Chip Equivalency</button>
+        </div>
+
+        <div id="comparison-tab" class="tab-content active">
+            <div class="chip-selector">
+                <div class="dropdown-container">
+                    <button class="dropdown-button" onclick="toggleDropdown()">
+                        <span id="dropdown-text">Select chips to compare...</span>
+                        <span>▼</span>
+                    </button>
+                    <div class="dropdown-menu" id="dropdown-menu"></div>
+                </div>
+            </div>
+            <div id="comparison-table"></div>
+        </div>
+
+        <div id="converter-tab" class="tab-content">
+            <div class="converter-section">
+                <h2 style="margin-bottom: 20px; color: #2d3748;">Chip Equivalency Calculator</h2>
+                <p style="color: #718096; margin-bottom: 20px;">
+                    Calculate how many units of one chip equals another based on compute performance (FP16/BF16).
+                </p>
+
+                <div class="converter-controls">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #4a5568; font-weight: 600;">Quantity:</label>
+                        <input type="text" id="chip-quantity" value="1"
+                               oninput="formatQuantityInput(this)"
+                               onchange="calculateEquivalency()"
+                               style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 1em; width: 140px; text-align: right;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #4a5568; font-weight: 600;">Base Chip:</label>
+                        <select id="base-chip" onchange="calculateEquivalency()">
+                            <option value="">Select a chip...</option>
+                        </select>
+                    </div>
+                    <div style="font-size: 1.5em; color: #718096;">=</div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #4a5568; font-weight: 600;">Compare to:</label>
+                        <select id="compare-chip" onchange="calculateEquivalency()">
+                            <option value="">Select a chip...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="equivalency-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Embedded chip data
+        const chipsData = [
+            {
+                name: 'NVIDIA GB300 (Blackwell Ultra)',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2025-08-22',
+                fp16: 2.5e15,
+                fp8: 5e15,
+                memory: 287.5e9,
+                bandwidth: 8e12,
+                tdp: 1400
+            },
+            {
+                name: 'NVIDIA B300 (Blackwell Ultra)',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2025-08-22',
+                fp16: 2.25e15,
+                fp8: 4.5e15,
+                memory: 270e9,
+                bandwidth: 7.7e12,
+                tdp: 1100
+            },
+            {
+                name: 'NVIDIA GB200',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2025-02-15',
+                fp16: 2.5e15,
+                fp8: 5e15,
+                memory: 186e9,
+                bandwidth: 8e12,
+                tdp: 1200
+            },
+            {
+                name: 'NVIDIA B200',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2024-11-15',
+                fp16: 2.25e15,
+                fp8: 4.5e15,
+                memory: 180e9,
+                bandwidth: 7.7e12,
+                tdp: 1000
+            },
+            {
+                name: 'NVIDIA B100',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2024-11-15',
+                fp16: 1.75e15,
+                fp8: 3.5e15,
+                memory: 192e9,
+                bandwidth: 8e12,
+                tdp: 700
+            },
+            {
+                name: 'NVIDIA H200 SXM',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2024-11-18',
+                fp16: 989.5e12,
+                fp8: 1979e12,
+                memory: null,
+                bandwidth: 4.8e12,
+                tdp: 700
+            },
+            {
+                name: 'NVIDIA H100 SXM5 80GB',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2022-09-20',
+                fp16: 989.4e12,
+                fp8: null,
+                memory: 80e9,
+                bandwidth: 3.35e12,
+                tdp: 700
+            },
+            {
+                name: 'NVIDIA H100 PCIe',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2022-09-20',
+                fp16: 756e12,
+                fp8: null,
+                memory: 80e9,
+                bandwidth: 2.04e12,
+                tdp: 350
+            },
+            {
+                name: 'NVIDIA HGX H20',
+                manufacturer: 'NVIDIA',
+                releaseDate: '2023-11-09',
+                fp16: 148e12,
+                fp8: null,
+                memory: 96e9,
+                bandwidth: 4e12,
+                tdp: 400
+            },
+            {
+                name: 'Google TPU v7 Ironwood',
+                manufacturer: 'Google',
+                releaseDate: '2025-11-06',
+                fp16: 2307e12,
+                fp8: 4614e12,
+                memory: 192e9,
+                bandwidth: 7.37e12,
+                tdp: 960
+            },
+            {
+                name: 'Google TPU v6e Trillium',
+                manufacturer: 'Google',
+                releaseDate: '2024-05-14',
+                fp16: 918e12,
+                fp8: 918e12,
+                memory: 32e9,
+                bandwidth: 1.64e12,
+                tdp: 380
+            },
+            {
+                name: 'Google TPU v5p',
+                manufacturer: 'Google',
+                releaseDate: '2023-12-06',
+                fp16: 459e12,
+                fp8: null,
+                memory: 95e9,
+                bandwidth: 2.765e12,
+                tdp: 540
+            },
+            {
+                name: 'Google TPU v5e',
+                manufacturer: 'Google',
+                releaseDate: '2023-08-29',
+                fp16: 197e12,
+                fp8: null,
+                memory: 16e9,
+                bandwidth: 819e9,
+                tdp: null
+            },
+            {
+                name: 'Amazon Trainium3',
+                manufacturer: 'Amazon AWS',
+                releaseDate: '2025-12-02',
+                fp16: 671e12,
+                fp8: 2517e12,
+                memory: null,
+                bandwidth: null,
+                tdp: 700
+            },
+            {
+                name: 'Amazon Trainium2',
+                manufacturer: 'Amazon AWS',
+                releaseDate: '2024-12-03',
+                fp16: 667e12,
+                fp8: 1299e12,
+                memory: 96e9,
+                bandwidth: 2.9e12,
+                tdp: 500
+            },
+            {
+                name: 'Amazon Trainium1',
+                manufacturer: 'Amazon AWS',
+                releaseDate: '2022-10-15',
+                fp16: 190e12,
+                fp8: null,
+                memory: null,
+                bandwidth: 9.8e12,
+                tdp: null
+            }
+        ];
+
+        const selectedChips = new Set();
+
+        function initializeUI() {
+            populateDropdowns();
+            renderDropdownMenu();
+
+            // Auto-select some chips
+            const autoSelect = ['NVIDIA B200', 'NVIDIA H100 SXM5 80GB', 'Google TPU v6e Trillium', 'Amazon Trainium2'];
+            autoSelect.forEach(name => {
+                if (chipsData.find(c => c.name === name)) {
+                    selectedChips.add(name);
+                }
+            });
+
+            updateDropdownText();
+            updateComparisonTable();
+        }
+
+        function renderDropdownMenu() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.innerHTML = chipsData.map(chip => `
+                <div class="dropdown-item" onclick="toggleChipFromDropdown(event, '${chip.name.replace(/'/g, "\\'")}')">
+                    <input type="checkbox"
+                           ${selectedChips.has(chip.name) ? 'checked' : ''}
+                           onclick="event.stopPropagation(); toggleChip('${chip.name.replace(/'/g, "\\'")}')">
+                    <span>${chip.name}</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleDropdown() {
+            const menu = document.getElementById('dropdown-menu');
+            menu.classList.toggle('active');
+        }
+
+        function updateDropdownText() {
+            const text = document.getElementById('dropdown-text');
+            const count = selectedChips.size;
+            if (count === 0) {
+                text.innerHTML = 'Select chips to compare...';
+            } else {
+                text.innerHTML = `<span class="selected-count">${count} chip${count > 1 ? 's' : ''} selected</span>`;
+            }
+        }
+
+        function toggleChipFromDropdown(event, name) {
+            event.stopPropagation();
+            toggleChip(name);
+        }
+
+        function toggleChip(name) {
+            if (selectedChips.has(name)) {
+                selectedChips.delete(name);
+            } else {
+                selectedChips.add(name);
+            }
+            renderDropdownMenu();
+            updateDropdownText();
+            updateComparisonTable();
+        }
+
+        function updateComparisonTable() {
+            const container = document.getElementById('comparison-table');
+
+            if (selectedChips.size === 0) {
+                container.innerHTML = '<div class="no-chips-message">Select chips above to compare</div>';
+                return;
+            }
+
+            const selected = chipsData.filter(c => selectedChips.has(c.name));
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Chip</th>
+                            <th>Manufacturer</th>
+                            <th>Release Date</th>
+                            <th>FP16/BF16 FLOP/s</th>
+                            <th>FP8 FLOP/s</th>
+                            <th>Memory (GB)</th>
+                            <th>Memory Bandwidth (GB/s)</th>
+                            <th>TDP (W)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${selected.map(chip => `
+                            <tr>
+                                <td><strong>${chip.name}</strong></td>
+                                <td>${chip.manufacturer}</td>
+                                <td>${formatDate(chip.releaseDate)}</td>
+                                <td class="number">${formatFlops(chip.fp16)}</td>
+                                <td class="number">${formatFlops(chip.fp8)}</td>
+                                <td class="number">${formatMemory(chip.memory)}</td>
+                                <td class="number">${formatBandwidth(chip.bandwidth)}</td>
+                                <td class="number">${chip.tdp || 'N/A'}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = table;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+        }
+
+        function formatFlops(value) {
+            if (!value || value === '') return 'N/A';
+            const num = parseFloat(value);
+            if (num >= 1e15) return (num / 1e15).toFixed(1) + ' PFLOP/s';
+            if (num >= 1e12) return (num / 1e12).toFixed(1) + ' TFLOP/s';
+            return num.toExponential(2);
+        }
+
+        function formatMemory(bytes) {
+            if (!bytes) return 'N/A';
+            return (bytes / 1e9).toFixed(0) + ' GB';
+        }
+
+        function formatBandwidth(bytesPerSec) {
+            if (!bytesPerSec) return 'N/A';
+            return (bytesPerSec / 1e9).toFixed(0) + ' GB/s';
+        }
+
+        function simplifyChipName(name) {
+            // Simplify chip names for display
+            return name
+                .replace(' (Blackwell Ultra)', '')
+                .replace(' SXM5 80GB', ' SXM5')
+                .replace(' Ironwood', '')
+                .replace(' Trillium', '');
+        }
+
+        function formatQuantityInput(input) {
+            // Remove all non-digit characters
+            let value = input.value.replace(/[^\d]/g, '');
+
+            // Add commas for thousands
+            if (value) {
+                value = parseInt(value, 10).toLocaleString('en-US');
+            }
+
+            input.value = value;
+        }
+
+        function getQuantityValue() {
+            const input = document.getElementById('chip-quantity');
+            // Remove commas and parse
+            return parseInt(input.value.replace(/,/g, '') || '1', 10);
+        }
+
+        function populateDropdowns() {
+            const baseSelect = document.getElementById('base-chip');
+            const compareSelect = document.getElementById('compare-chip');
+
+            const options = chipsData.map(chip =>
+                `<option value="${chip.name}">${chip.name}</option>`
+            ).join('');
+
+            baseSelect.innerHTML = '<option value="">Select a chip...</option>' + options;
+            compareSelect.innerHTML = '<option value="">Select a chip...</option>' + options;
+        }
+
+        function calculateEquivalency() {
+            const quantity = getQuantityValue();
+            const baseName = document.getElementById('base-chip').value;
+            const compareName = document.getElementById('compare-chip').value;
+            const resultsDiv = document.getElementById('equivalency-results');
+
+            if (!baseName || !compareName) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            const baseChip = chipsData.find(c => c.name === baseName);
+            const compareChip = chipsData.find(c => c.name === compareName);
+
+            const baseFP16 = baseChip.fp16 || 0;
+            const compareFP16 = compareChip.fp16 || 0;
+
+            if (baseFP16 === 0 || compareFP16 === 0) {
+                resultsDiv.innerHTML = '<div class="no-chips-message">Performance data not available for comparison</div>';
+                return;
+            }
+
+            const ratio = (baseFP16 * quantity) / compareFP16;
+            const inverseRatio = compareFP16 / (baseFP16 * quantity);
+
+            const baseMemory = baseChip.memory || 0;
+            const compareMemory = compareChip.memory || 0;
+            const memoryRatio = (baseMemory * quantity) / compareMemory;
+
+            const baseBandwidth = baseChip.bandwidth || 0;
+            const compareBandwidth = compareChip.bandwidth || 0;
+            const bandwidthRatio = (baseBandwidth * quantity) / compareBandwidth;
+
+            const formatBigNumber = (num) => {
+                if (num >= 1e6) {
+                    return (num / 1e6).toFixed(2) + 'M';
+                } else if (num >= 1e3) {
+                    return (num / 1e3).toFixed(1) + 'K';
+                }
+                return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+            };
+
+            const formatSmallNumber = (num) => {
+                if (num < 0.001) {
+                    return num.toExponential(2);
+                } else if (num < 0.01) {
+                    return num.toFixed(4);
+                } else if (num < 1) {
+                    return num.toFixed(3);
+                } else if (num < 10) {
+                    return num.toFixed(2);
+                } else {
+                    return num.toFixed(1);
+                }
+            };
+
+            const simpleBaseName = simplifyChipName(baseName);
+            const simpleCompareName = simplifyChipName(compareName);
+
+            resultsDiv.innerHTML = `
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Compute</h3>
+                        <div class="result-value">${formatBigNumber(ratio)}</div>
+                        <div class="result-label">
+                            ${quantity.toLocaleString()} × ${simpleBaseName} = ${formatBigNumber(ratio)} × ${simpleCompareName}
+                        </div>
+                        <div class="metric-details">
+                            <div class="metric-row">
+                                <span>${simpleBaseName} FP16:</span>
+                                <strong>${formatFlops(baseFP16)}</strong>
+                            </div>
+                            <div class="metric-row">
+                                <span>${simpleCompareName} FP16:</span>
+                                <strong>${formatFlops(compareFP16)}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${memoryRatio > 0 ? `
+                    <div class="result-card">
+                        <h3>Memory</h3>
+                        <div class="result-value">${formatBigNumber(memoryRatio)}</div>
+                        <div class="result-label">
+                            ${quantity.toLocaleString()} × ${simpleBaseName} = ${formatBigNumber(memoryRatio)} × ${simpleCompareName}
+                        </div>
+                        <div class="metric-details">
+                            <div class="metric-row">
+                                <span>${simpleBaseName}:</span>
+                                <strong>${formatMemory(baseMemory)}</strong>
+                            </div>
+                            <div class="metric-row">
+                                <span>${simpleCompareName}:</span>
+                                <strong>${formatMemory(compareMemory)}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    ${bandwidthRatio > 0 ? `
+                    <div class="result-card">
+                        <h3>Bandwidth</h3>
+                        <div class="result-value">${formatBigNumber(bandwidthRatio)}</div>
+                        <div class="result-label">
+                            ${quantity.toLocaleString()} × ${simpleBaseName} = ${formatBigNumber(bandwidthRatio)} × ${simpleCompareName}
+                        </div>
+                        <div class="metric-details">
+                            <div class="metric-row">
+                                <span>${simpleBaseName}:</span>
+                                <strong>${formatBandwidth(baseBandwidth)}</strong>
+                            </div>
+                            <div class="metric-row">
+                                <span>${simpleCompareName}:</span>
+                                <strong>${formatBandwidth(compareBandwidth)}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        // Initialize on page load
+        initializeUI();
+    </script>
+</body>
+</html>
