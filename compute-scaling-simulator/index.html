@@ -164,56 +164,76 @@
             height: 140px;
         }
 
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+        .preset-selector {
+            display: flex;
+            gap: 0;
             margin-bottom: 20px;
-        }
-
-        .metric-card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
+            border-radius: 8px;
+            overflow: hidden;
             border: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
-        .metric-label {
-            font-size: 0.9rem;
+        .preset-option {
+            flex: 1;
+            padding: 10px 8px;
+            text-align: center;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
             font-weight: 600;
-            color: #444;
-            margin-bottom: 8px;
+            color: #666;
+            transition: all 0.2s;
+            border-right: 1px solid #e0e0e0;
         }
 
-        .metric-dual {
-            display: flex;
-            justify-content: space-around;
-            gap: 10px;
+        .preset-option:last-child {
+            border-right: none;
         }
 
-        .metric-year-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .preset-option:hover {
+            background: #e8e8e8;
         }
 
-        .metric-year {
-            font-size: 0.65rem;
-            color: #888;
-            margin-bottom: 2px;
+        .preset-option.active {
+            background: #0077b6;
+            color: white;
         }
 
-        .metric-value {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #0077b6;
+        .gdp-slider-container {
+            position: relative;
         }
 
-        .metric-unit {
-            font-size: 0.7rem;
-            color: #888;
+        .gdp-slider-track {
+            position: absolute;
+            top: 6px;
+            height: 6px;
+            border-radius: 0 3px 3px 0;
+            pointer-events: none;
+            left: 50%;
+            right: 0;
+            background: linear-gradient(90deg, rgba(255,100,50,0.2), rgba(255,50,0,0.4));
+        }
+
+        #gdp-growth-2035.on-fire::-webkit-slider-thumb {
+            background: linear-gradient(135deg, #ff6b35, #f7931e, #ffcc00);
+            box-shadow: 0 0 10px #ff6b35, 0 0 20px #f7931e, 0 0 30px rgba(255,107,53,0.5);
+            animation: flame-pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        #gdp-growth-2035.on-fire::-moz-range-thumb {
+            background: linear-gradient(135deg, #ff6b35, #f7931e, #ffcc00);
+            box-shadow: 0 0 10px #ff6b35, 0 0 20px #f7931e, 0 0 30px rgba(255,107,53,0.5);
+            animation: flame-pulse 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flame-pulse {
+            from {
+                box-shadow: 0 0 8px #ff6b35, 0 0 15px #f7931e, 0 0 25px rgba(255,107,53,0.4);
+            }
+            to {
+                box-shadow: 0 0 12px #ff6b35, 0 0 25px #f7931e, 0 0 40px rgba(255,107,53,0.6);
+            }
         }
 
         .reset-btn {
@@ -351,86 +371,105 @@
             flex-shrink: 0;
         }
 
-        .stats-table-section {
+        .stats-section {
             margin-top: 30px;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         .stats-title {
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 20px;
-            text-align: center;
+            color: #666;
+            margin-bottom: 16px;
         }
 
-        .stats-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95rem;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
         }
 
-        .stats-table th,
-        .stats-table td {
-            padding: 12px 16px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid #e8e8e8;
         }
 
-        .stats-table th {
-            background: #f5f7fa;
+        .stat-card-title {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .stat-card-values {
+            display: flex;
+            gap: 16px;
+        }
+
+        .stat-year-block {
+            flex: 1;
+        }
+
+        .stat-year-label {
+            font-size: 0.65rem;
+            color: #aaa;
+            margin-bottom: 2px;
+        }
+
+        .stat-year-value {
+            font-size: 1rem;
             font-weight: 600;
             color: #444;
-        }
-
-        .stats-table th:not(:first-child),
-        .stats-table td:not(:first-child) {
-            text-align: right;
-            font-family: 'Monaco', 'Consolas', monospace;
-        }
-
-        .stats-table td:first-child {
-            color: #666;
-        }
-
-        .stats-table td:not(:first-child) {
-            color: #0077b6;
-            font-weight: 600;
-        }
-
-        .stats-table tbody tr:hover {
-            background: rgba(0, 119, 182, 0.03);
-        }
-
-        .stats-table tbody tr:last-child td {
-            border-bottom: none;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
         .input-charts-section {
             margin-bottom: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e8e8e8;
+        }
+
+        .input-charts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
         }
 
         .input-charts-title {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            color: #1a1a2e;
-            margin-bottom: 15px;
+            color: #666;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .drag-hint {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 400;
-            color: #888;
-            background: #f0f0f0;
-            padding: 2px 8px;
-            border-radius: 4px;
+            color: #999;
+        }
+
+        .collapse-icon {
+            font-size: 0.8rem;
+            color: #999;
+            transition: transform 0.2s;
+        }
+
+        .input-charts-section.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .input-charts-section.collapsed .input-charts-content {
+            display: none;
+        }
+
+        .input-charts-content {
+            margin-top: 12px;
         }
 
         .input-charts-grid {
@@ -441,17 +480,16 @@
 
         .input-chart-container {
             background: #ffffff;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 10px;
             border: 1px solid #e0e0e0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             min-width: 0;
         }
 
         .input-chart-title {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
-            color: #444;
+            color: #666;
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -559,54 +597,18 @@
     <div class="container">
         <h1>Compute Scaling Simulator</h1>
         <p class="subtitle">Model frontier AI compute availability through 2035</p>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Largest Training Run (FLOP)</div>
-                <div class="metric-dual">
-                    <div class="metric-year-group">
-                        <span class="metric-year">2030</span>
-                        <span class="metric-value" id="metric-training-2030">-</span>
-                    </div>
-                    <div class="metric-year-group">
-                        <span class="metric-year">2035</span>
-                        <span class="metric-value" id="metric-training-2035">-</span>
-                    </div>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Training Cluster Cost</div>
-                <div class="metric-dual">
-                    <div class="metric-year-group">
-                        <span class="metric-year">2030</span>
-                        <span class="metric-value" id="metric-cluster-cost-2030">-</span>
-                    </div>
-                    <div class="metric-year-group">
-                        <span class="metric-year">2035</span>
-                        <span class="metric-value" id="metric-cluster-cost-2035">-</span>
-                    </div>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Total AI Power</div>
-                <div class="metric-dual">
-                    <div class="metric-year-group">
-                        <span class="metric-year">2030</span>
-                        <span class="metric-value" id="metric-power-2030">-</span>
-                    </div>
-                    <div class="metric-year-group">
-                        <span class="metric-year">2035</span>
-                        <span class="metric-value" id="metric-power-2035">-</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <p style="font-size: 0.8rem; font-style: italic; color: #888; text-align: center; margin-bottom: 20px;">Built by Josh You using Claude. While informed by empirical trends, this tool is for illustrative purposes only and is not a forecast or research output.</p>
 
         <div class="main-grid">
             <div class="controls-panel">
+                <div class="preset-selector">
+                    <button class="preset-option" data-preset="grounded" onclick="applyPreset('grounded')">Grounded</button>
+                    <button class="preset-option active" data-preset="bullish" onclick="applyPreset('bullish')">Bullish</button>
+                    <button class="preset-option" data-preset="gonzo" onclick="applyPreset('gonzo')">Gonzo</button>
+                </div>
+
                 <div class="section" id="capex-section">
-                    <div class="section-title">1. Capex Growth</div>
-                    <div class="info-text" style="margin-bottom: 10px;">Annual AI hardware spending worldwide</div>
+                    <div class="section-title">Annual AI Hardware Spending</div>
 
                     <div class="control-group">
                         <div class="control-label">
@@ -621,24 +623,26 @@
                             <span>Capex Cap (% of GDP)</span>
                             <span class="control-value" id="val-capex-gdp-percent">1%</span>
                         </div>
-                        <input type="range" id="capex-gdp-percent" min="0.5" max="5" value="1" step="0.5">
+                        <input type="range" id="capex-gdp-percent" min="0.5" max="20" value="1" step="0.5">
                     </div>
                     <div class="control-group">
                         <div class="control-label">
                             <span>GDP Growth 2035</span>
-                            <span class="control-value" id="val-gdp-growth-2035">3%</span>
+                            <span class="control-value" id="val-gdp-growth-2035">6%</span>
                         </div>
-                        <input type="range" id="gdp-growth-2035" min="1" max="30" value="3" step="0.5">
+                        <div class="gdp-slider-container">
+                            <div class="gdp-slider-track"></div>
+                            <input type="range" id="gdp-growth-2035" min="0" max="100" value="30" step="1">
+                        </div>
                         <div class="info-text">Interpolates from 3% in 2025</div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">2. Cost-Performance</div>
-                    <div class="info-text" style="margin-bottom: 10px;">Compute per dollar improvement rate</div>
+                    <div class="section-title">Hardware Cost Improvement</div>
                     <div class="control-group">
                         <div class="control-label">
-                            <span>Initial Improvement Rate</span>
+                            <span>Initial Rate</span>
                             <span class="control-value" id="val-cost-perf">40%</span>
                         </div>
                         <input type="range" id="cost-perf" min="10" max="80" value="40" step="5">
@@ -661,21 +665,18 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">3. Compute Stock</div>
-                    <div class="info-text" style="margin-bottom: 10px;">Total active compute from recent years</div>
+                    <div class="section-title">Hardware Lifespan</div>
                     <div class="control-group">
                         <div class="control-label">
-                            <span>Stock Lifetime (years)</span>
+                            <span>Years in Active Use</span>
                             <span class="control-value" id="val-stock-lifetime">5</span>
                         </div>
                         <input type="range" id="stock-lifetime" min="2" max="10" value="5" step="1">
-                        <div class="info-text">How long compute remains in active use</div>
                     </div>
                 </div>
 
                 <div class="section">
-                    <div class="section-title">4. Largest Lab Share</div>
-                    <div class="info-text" style="margin-bottom: 10px;">Frontier lab's share of global compute</div>
+                    <div class="section-title">Largest Lab's Share of Global Compute</div>
                     <div class="control-group">
                         <div class="control-label">
                             <span>Initial Share (2025)</span>
@@ -693,12 +694,11 @@
                 </div>
 
                 <div class="section">
-                    <div class="section-title">5. Training Run Parameters</div>
-                    <div class="info-text" style="margin-bottom: 10px;">Settings for largest training run</div>
+                    <div class="section-title">Largest Training Run</div>
 
                     <div class="param-pair">
                         <div class="param-pair-label">GPU Utilization <span class="param-arrow">2025 → 2030</span></div>
-                        <div class="info-text" style="margin-bottom: 8px;">Fraction of peak 8-bit FLOP/s achieved</div>
+                        <div class="info-text" style="margin-bottom: 12px; margin-top: 8px">Fraction of peak 8-bit FLOP/s achieved</div>
                         <div class="param-pair-sliders">
                             <div class="param-slider-group">
                                 <input type="range" id="utilization" min="5" max="100" value="15" step="5">
@@ -713,8 +713,8 @@
                     </div>
 
                     <div class="param-pair">
-                        <div class="param-pair-label">Training Run Share <span class="param-arrow">2025 → 2030</span></div>
-                        <div class="info-text" style="margin-bottom: 8px;">Share of lab compute for largest run</div>
+                        <div class="param-pair-label">Training Cluster Share <span class="param-arrow">2025 → 2030</span></div>
+                        <div class="info-text" style="margin-bottom: 12px; margin-top: 8px">Share of lab compute for largest run</div>
                         <div class="param-pair-sliders">
                             <div class="param-slider-group">
                                 <input type="range" id="training-share" min="1" max="50" value="20" step="1">
@@ -730,6 +730,7 @@
 
                     <div class="param-pair">
                         <div class="param-pair-label">Training Duration <span class="param-arrow">2025 → 2030</span></div>
+                        <div class="info-text" style="margin-bottom: 12px; margin-top: 8px">Length of training run in days</div>
                         <div class="param-pair-sliders">
                             <div class="param-slider-group">
                                 <input type="range" id="training-duration" min="30" max="365" value="100" step="10">
@@ -748,34 +749,39 @@
             </div>
 
             <div class="charts-panel">
-                <div class="input-charts-section">
-                    <div class="input-charts-title">
-                        Input Parameters
-                        <span class="drag-hint">Drag points to adjust</span>
+                <div class="input-charts-section" id="input-charts-section">
+                    <div class="input-charts-header" onclick="toggleInputCharts()">
+                        <div class="input-charts-title">
+                            Input Parameters
+                            <span class="drag-hint">Drag points to adjust</span>
+                        </div>
+                        <span class="collapse-icon">▼</span>
                     </div>
-                    <div class="input-charts-grid">
-                        <div class="input-chart-container">
-                            <div class="input-chart-title">Annual Capex ($B)</div>
-                            <div class="chart-wrapper input-chart">
-                                <canvas id="chart-capex-input"></canvas>
+                    <div class="input-charts-content">
+                        <div class="input-charts-grid">
+                            <div class="input-chart-container">
+                                <div class="input-chart-title">Annual Capex ($B)</div>
+                                <div class="chart-wrapper input-chart">
+                                    <canvas id="chart-capex-input"></canvas>
+                                </div>
                             </div>
-                        </div>
-                        <div class="input-chart-container">
-                            <div class="input-chart-title">Cost-Performance Improvement (%)</div>
-                            <div class="chart-wrapper input-chart">
-                                <canvas id="chart-costperf-input"></canvas>
+                            <div class="input-chart-container">
+                                <div class="input-chart-title">Cost-Performance (%)</div>
+                                <div class="chart-wrapper input-chart">
+                                    <canvas id="chart-costperf-input"></canvas>
+                                </div>
                             </div>
-                        </div>
-                        <div class="input-chart-container">
-                            <div class="input-chart-title">Largest Lab Share (%)</div>
-                            <div class="chart-wrapper input-chart">
-                                <canvas id="chart-labshare-input"></canvas>
+                            <div class="input-chart-container">
+                                <div class="input-chart-title">Largest Lab Share (%)</div>
+                                <div class="chart-wrapper input-chart">
+                                    <canvas id="chart-labshare-input"></canvas>
+                                </div>
                             </div>
-                        </div>
-                        <div class="input-chart-container" id="gdp-chart-container">
-                            <div class="input-chart-title">GDP Growth Rate (%)</div>
-                            <div class="chart-wrapper input-chart">
-                                <canvas id="chart-gdp-input"></canvas>
+                            <div class="input-chart-container" id="gdp-chart-container">
+                                <div class="input-chart-title">GDP Growth (%)</div>
+                                <div class="chart-wrapper input-chart">
+                                    <canvas id="chart-gdp-input"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -821,49 +827,88 @@
             </div>
         </div>
 
-        <div class="stats-table-section">
+        <div class="stats-section">
             <h2 class="stats-title">Key Statistics</h2>
-            <table class="stats-table">
-                <thead>
-                    <tr>
-                        <th>Metric</th>
-                        <th>2030</th>
-                        <th>2035</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Largest Training Run</td>
-                        <td id="stat-training-2030">-</td>
-                        <td id="stat-training-2035">-</td>
-                    </tr>
-                    <tr>
-                        <td>AI Capital Stock Value</td>
-                        <td id="stat-capital-2030">-</td>
-                        <td id="stat-capital-2035">-</td>
-                    </tr>
-                    <tr>
-                        <td>Lab Annual Compute Spending</td>
-                        <td id="stat-lab-spending-2030">-</td>
-                        <td id="stat-lab-spending-2035">-</td>
-                    </tr>
-                    <tr>
-                        <td>Total AI Power Capacity</td>
-                        <td id="stat-power-total-2030">-</td>
-                        <td id="stat-power-total-2035">-</td>
-                    </tr>
-                    <tr>
-                        <td>Largest Training Cluster Power</td>
-                        <td id="stat-power-cluster-2030">-</td>
-                        <td id="stat-power-cluster-2035">-</td>
-                    </tr>
-                    <tr>
-                        <td>Largest Training Cluster Cost</td>
-                        <td id="stat-cluster-cost-2030">-</td>
-                        <td id="stat-cluster-cost-2035">-</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-title">Largest Training Run</div>
+                    <div class="stat-card-values">
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2030</div>
+                            <div class="stat-year-value" id="stat-training-2030">-</div>
+                        </div>
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2035</div>
+                            <div class="stat-year-value" id="stat-training-2035">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">AI Capital Stock</div>
+                    <div class="stat-card-values">
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2030</div>
+                            <div class="stat-year-value" id="stat-capital-2030">-</div>
+                        </div>
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2035</div>
+                            <div class="stat-year-value" id="stat-capital-2035">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Lab Annual Spending</div>
+                    <div class="stat-card-values">
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2030</div>
+                            <div class="stat-year-value" id="stat-lab-spending-2030">-</div>
+                        </div>
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2035</div>
+                            <div class="stat-year-value" id="stat-lab-spending-2035">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Total AI Power</div>
+                    <div class="stat-card-values">
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2030</div>
+                            <div class="stat-year-value" id="stat-power-total-2030">-</div>
+                        </div>
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2035</div>
+                            <div class="stat-year-value" id="stat-power-total-2035">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Training Cluster Power</div>
+                    <div class="stat-card-values">
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2030</div>
+                            <div class="stat-year-value" id="stat-power-cluster-2030">-</div>
+                        </div>
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2035</div>
+                            <div class="stat-year-value" id="stat-power-cluster-2035">-</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-title">Training Cluster Cost</div>
+                    <div class="stat-card-values">
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2030</div>
+                            <div class="stat-year-value" id="stat-cluster-cost-2030">-</div>
+                        </div>
+                        <div class="stat-year-block">
+                            <div class="stat-year-label">2035</div>
+                            <div class="stat-year-value" id="stat-cluster-cost-2035">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="assumptions-section">
@@ -877,6 +922,7 @@
                 <li><strong>Training run timing:</strong> Training run uses compute available at start of run (duration days before completion)</li>
                 <li><strong>Lab share growth:</strong> Exponential interpolation from initial to final share (2025→2030), then constant</li>
                 <li><strong>Training parameters:</strong> Linear interpolation from 2025 to 2030 values, then constant after 2030</li>
+                <li><strong>World GDP:</strong> $120 trillion in 2025, growing at ~3%/year in recent years</li>
             </ul>
         </div>
     </div>
@@ -895,24 +941,63 @@
         // GDP chart instance
         let chartGdpGrowthInput;
 
-        // Default values
-        const defaults = {
-            capexGrowth: 40,
-            capexGdpPercent: 1,
-            gdpGrowth2035: 3,
-            costPerf: 40,
-            slowdownStart: 2030,
-            slowdownFactor: 2,
-            stockLifetime: 5,
-            labShareInit: 5,
-            labShareFinal: 10,
-            utilization: 15,
-            utilizationFinal: 40,
-            trainingShare: 20,
-            trainingShareFinal: 20,
-            trainingDuration: 100,
-            trainingDurationFinal: 200
+        // Preset scenarios
+        const presets = {
+            grounded: {
+                capexGrowth: 30,
+                capexGdpPercent: 0.5,
+                gdpGrowth2035: 3,
+                costPerf: 40,
+                slowdownStart: 2030,
+                slowdownFactor: 2,
+                stockLifetime: 5,
+                labShareInit: 5,
+                labShareFinal: 10,
+                utilization: 15,
+                utilizationFinal: 40,
+                trainingShare: 20,
+                trainingShareFinal: 20,
+                trainingDuration: 100,
+                trainingDurationFinal: 200
+            },
+            bullish: {
+                capexGrowth: 40,
+                capexGdpPercent: 1,
+                gdpGrowth2035: 6,
+                costPerf: 40,
+                slowdownStart: 2032,
+                slowdownFactor: 1.5,
+                stockLifetime: 5,
+                labShareInit: 5,
+                labShareFinal: 10,
+                utilization: 15,
+                utilizationFinal: 40,
+                trainingShare: 20,
+                trainingShareFinal: 20,
+                trainingDuration: 100,
+                trainingDurationFinal: 200
+            },
+            gonzo: {
+                capexGrowth: 50,
+                capexGdpPercent: 10,
+                gdpGrowth2035: 30,
+                costPerf: 40,
+                slowdownStart: 2035,
+                slowdownFactor: 1,
+                stockLifetime: 5,
+                labShareInit: 5,
+                labShareFinal: 10,
+                utilization: 15,
+                utilizationFinal: 40,
+                trainingShare: 20,
+                trainingShareFinal: 20,
+                trainingDuration: 100,
+                trainingDurationFinal: 200
+            }
         };
+
+        // Default values (Bullish preset)
+        const defaults = presets.bullish;
 
         // World GDP in 2025 ($T)
         const INITIAL_GDP = 120; // $120T
@@ -929,12 +1014,44 @@
 
         const years = [2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
 
+        // GDP slider conversion functions (nonlinear scale)
+        // Slider 0-50 = 1-10% (linear), Slider 50-100 = 10-100% (10% steps)
+        function sliderToGdpGrowth(sliderVal) {
+            if (sliderVal <= 50) {
+                // 0-50 maps to 1-10%
+                return 1 + (sliderVal / 50) * 9;
+            } else {
+                // 50-100 maps to 10-100%
+                return 10 + ((sliderVal - 50) / 50) * 90;
+            }
+        }
+
+        function gdpGrowthToSlider(gdpPct) {
+            if (gdpPct <= 10) {
+                // 1-10% maps to 0-50
+                return ((gdpPct - 1) / 9) * 50;
+            } else {
+                // 10-100% maps to 50-100
+                return 50 + ((gdpPct - 10) / 90) * 50;
+            }
+        }
+
+        function updateGdpSliderFireEffect() {
+            const slider = document.getElementById('gdp-growth-2035');
+            const gdpPct = sliderToGdpGrowth(parseFloat(slider.value));
+            if (gdpPct >= 10) {
+                slider.classList.add('on-fire');
+            } else {
+                slider.classList.remove('on-fire');
+            }
+        }
+
         function getParams() {
             return {
                 // Capex params
                 capexGrowth: parseFloat(document.getElementById('capex-growth').value) / 100,
                 capexGdpPercent: parseFloat(document.getElementById('capex-gdp-percent').value) / 100,
-                gdpGrowth2035: parseFloat(document.getElementById('gdp-growth-2035').value) / 100,
+                gdpGrowth2035: sliderToGdpGrowth(parseFloat(document.getElementById('gdp-growth-2035').value)) / 100,
                 // Other params
                 costPerf: parseFloat(document.getElementById('cost-perf').value) / 100,
                 slowdownStart: parseInt(document.getElementById('slowdown-start').value),
@@ -1175,40 +1292,10 @@
         function updateCharts() {
             const data = simulate();
 
-            // Update metrics
+            // Calculate values for growth badges
             const frontier2030 = data.frontierComputeData[5];
             const frontier2035 = data.frontierComputeData[10];
             const frontier2025 = data.frontierComputeData[0];
-
-            // Calculate values for metric cards - 2030
-            const params = getParams();
-            const DOLLARS_PER_GW = 40;
-            const capital2030 = data.capitalStockValue[5];
-            const labShare2030 = data.labShareData[5] / 100;
-            const trainingShare2030 = data.trainingShareData[5];
-            const labCapital2030 = capital2030 * labShare2030;
-            const labSpend2030 = labCapital2030 / params.stockLifetime;
-            const clusterCost2030 = labCapital2030 * trainingShare2030;
-            const powerTotal2030 = capital2030 / DOLLARS_PER_GW;
-
-            // Calculate values for metric cards - 2035
-            const capital2035 = data.capitalStockValue[10];
-            const labShare2035 = data.labShareData[10] / 100;
-            const trainingShare2035 = data.trainingShareData[10];
-            const labCapital2035 = capital2035 * labShare2035;
-            const labSpend2035 = labCapital2035 / params.stockLifetime;
-            const clusterCost2035 = labCapital2035 * trainingShare2035;
-            const powerTotal2035 = capital2035 / DOLLARS_PER_GW;
-
-            // Update 2030 metrics
-            document.getElementById('metric-training-2030').textContent = formatFlop(data.trainingRunData[5]);
-            document.getElementById('metric-cluster-cost-2030').textContent = formatDollars(clusterCost2030);
-            document.getElementById('metric-power-2030').textContent = formatPower(powerTotal2030);
-
-            // Update 2035 metrics
-            document.getElementById('metric-training-2035').textContent = formatFlop(data.trainingRunData[10]);
-            document.getElementById('metric-cluster-cost-2035').textContent = formatDollars(clusterCost2035);
-            document.getElementById('metric-power-2035').textContent = formatPower(powerTotal2035);
 
             // Calculate and display annual growth multipliers (geometric mean)
             const frontier2030AnnualGrowth = Math.pow(frontier2030 / frontier2025, 1/5);
@@ -1396,11 +1483,56 @@
             }
         }
 
+        function toggleInputCharts() {
+            const section = document.getElementById('input-charts-section');
+            section.classList.toggle('collapsed');
+        }
+
+        function applyPreset(presetName) {
+            const preset = presets[presetName];
+            if (!preset) return;
+
+            // Update active button
+            document.querySelectorAll('.preset-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.preset === presetName);
+            });
+
+            // Clear any custom chart data
+            customCapexData = null;
+            customCostPerfData = null;
+            customLabShareData = null;
+            customGdpGrowthData = null;
+            updateCustomIndicators();
+
+            // Apply preset values
+            document.getElementById('capex-growth').value = preset.capexGrowth;
+            document.getElementById('capex-gdp-percent').value = preset.capexGdpPercent;
+            document.getElementById('gdp-growth-2035').value = gdpGrowthToSlider(preset.gdpGrowth2035);
+            document.getElementById('cost-perf').value = preset.costPerf;
+            document.getElementById('slowdown-start').value = preset.slowdownStart;
+            document.getElementById('slowdown-factor').value = preset.slowdownFactor;
+            document.getElementById('stock-lifetime').value = preset.stockLifetime;
+            document.getElementById('lab-share-init').value = preset.labShareInit;
+            document.getElementById('lab-share-final').value = preset.labShareFinal;
+            document.getElementById('utilization').value = preset.utilization;
+            document.getElementById('utilization-final').value = preset.utilizationFinal;
+            document.getElementById('training-share').value = preset.trainingShare;
+            document.getElementById('training-share-final').value = preset.trainingShareFinal;
+            document.getElementById('training-duration').value = preset.trainingDuration;
+            document.getElementById('training-duration-final').value = preset.trainingDurationFinal;
+
+            updateLabels();
+            updateCharts();
+        }
+
         function updateLabels() {
             // Capex params
             document.getElementById('val-capex-growth').textContent = document.getElementById('capex-growth').value + '%';
             document.getElementById('val-capex-gdp-percent').textContent = document.getElementById('capex-gdp-percent').value + '%';
-            document.getElementById('val-gdp-growth-2035').textContent = document.getElementById('gdp-growth-2035').value + '%';
+            const gdpSliderVal = parseFloat(document.getElementById('gdp-growth-2035').value);
+            const gdpPct = sliderToGdpGrowth(gdpSliderVal);
+            document.getElementById('val-gdp-growth-2035').textContent = Math.round(gdpPct) + '%';
+            updateGdpSliderFireEffect();
             // Other params
             document.getElementById('val-cost-perf').textContent = document.getElementById('cost-perf').value + '%';
             document.getElementById('val-slowdown-start').textContent = document.getElementById('slowdown-start').value;
@@ -1427,7 +1559,7 @@
             // Capex params
             document.getElementById('capex-growth').value = defaults.capexGrowth;
             document.getElementById('capex-gdp-percent').value = defaults.capexGdpPercent;
-            document.getElementById('gdp-growth-2035').value = defaults.gdpGrowth2035;
+            document.getElementById('gdp-growth-2035').value = gdpGrowthToSlider(defaults.gdpGrowth2035);
             // Other params
             document.getElementById('cost-perf').value = defaults.costPerf;
             document.getElementById('slowdown-start').value = defaults.slowdownStart;
@@ -1465,12 +1597,26 @@
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(0,0,0,0.05)' },
-                        ticks: { color: '#666', font: { size: 10 } }
+                        grid: { display: false },
+                        ticks: {
+                            color: '#999',
+                            font: { size: 9 },
+                            callback: function(value, index) {
+                                const year = years[index];
+                                return (year === 2025 || year === 2030 || year === 2035) ? year : '';
+                            },
+                            maxRotation: 0
+                        }
                     },
                     y: {
                         grid: { color: 'rgba(0,0,0,0.05)' },
-                        ticks: { color: '#666', font: { size: 10 } }
+                        ticks: {
+                            color: '#999',
+                            font: { size: 9 },
+                            callback: function(value) {
+                                return Number.isInteger(value) ? value : '';
+                            }
+                        }
                     }
                 }
             };
@@ -1494,7 +1640,30 @@
                     y: {
                         type: 'logarithmic',
                         grid: { color: 'rgba(0,0,0,0.05)' },
-                        ticks: { color: '#666' },
+                        ticks: {
+                            color: '#666',
+                            callback: function(value) {
+                                // Only show clean tick values: 1, 3, 10, 30, 100, 300, 1000, etc.
+                                const log10 = Math.log10(value);
+                                const mantissa = value / Math.pow(10, Math.floor(log10));
+                                const roundedMantissa = Math.round(mantissa * 100) / 100;
+
+                                // Only show ticks at 1, 3, 10, 30, 100, etc.
+                                if (Math.abs(roundedMantissa - 1) < 0.01 || Math.abs(roundedMantissa - 3) < 0.01) {
+                                    // Format large numbers in scientific notation
+                                    if (value >= 1e6) {
+                                        const exp = Math.floor(Math.log10(value));
+                                        const mant = Math.round(value / Math.pow(10, exp));
+                                        if (mant === 1) {
+                                            return `1e${exp}`;
+                                        }
+                                        return `${mant}e${exp}`;
+                                    }
+                                    return Math.round(value);
+                                }
+                                return null; // Hide other ticks
+                            }
+                        },
                         afterDataLimits: (scale) => {
                             // Set reasonable bounds based on actual data
                             const data = scale.chart.data.datasets[0].data;
@@ -1517,15 +1686,15 @@
                     datasets: [{
                         label: 'Capex ($B)',
                         data: [],
-                        borderColor: '#e63946',
-                        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+                        borderColor: '#c1666b',
+                        backgroundColor: 'rgba(193, 102, 107, 0.08)',
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: '#e63946',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#c1666b',
                         pointBorderColor: '#fff',
-                        pointBorderWidth: 2
+                        pointBorderWidth: 1
                     }]
                 },
                 options: {
@@ -1555,7 +1724,12 @@
                                 const data = scale.chart.data.datasets[0].data;
                                 if (data && data.length > 0) {
                                     const maxVal = Math.max(...data);
-                                    scale.max = Math.max(5000, maxVal * 1.2);
+                                    // Smart scaling: if max < 1500, cap at 3000; otherwise give 1.5x headroom
+                                    if (maxVal < 1500) {
+                                        scale.max = 3000;
+                                    } else {
+                                        scale.max = maxVal * 1.5;
+                                    }
                                 }
                             }
                         }
@@ -1571,15 +1745,15 @@
                     datasets: [{
                         label: 'Cost-Perf (%)',
                         data: [],
-                        borderColor: '#2a9d8f',
-                        backgroundColor: 'rgba(42, 157, 143, 0.1)',
+                        borderColor: '#5a9a8f',
+                        backgroundColor: 'rgba(90, 154, 143, 0.08)',
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: '#2a9d8f',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#5a9a8f',
                         pointBorderColor: '#fff',
-                        pointBorderWidth: 2
+                        pointBorderWidth: 1
                     }]
                 },
                 options: {
@@ -1620,15 +1794,15 @@
                     datasets: [{
                         label: 'Lab Share (%)',
                         data: [],
-                        borderColor: '#f4a261',
-                        backgroundColor: 'rgba(244, 162, 97, 0.1)',
+                        borderColor: '#d4a574',
+                        backgroundColor: 'rgba(212, 165, 116, 0.08)',
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: '#f4a261',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#d4a574',
                         pointBorderColor: '#fff',
-                        pointBorderWidth: 2
+                        pointBorderWidth: 1
                     }]
                 },
                 options: {
@@ -1669,15 +1843,15 @@
                     datasets: [{
                         label: 'GDP Growth (%)',
                         data: [],
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderColor: '#8b8fc7',
+                        backgroundColor: 'rgba(139, 143, 199, 0.08)',
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 6,
-                        pointHoverRadius: 8,
-                        pointBackgroundColor: '#6366f1',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#8b8fc7',
                         pointBorderColor: '#fff',
-                        pointBorderWidth: 2
+                        pointBorderWidth: 1
                     }]
                 },
                 options: {
@@ -1691,6 +1865,21 @@
                             onDragEnd: function(e, datasetIndex, index, value) {
                                 syncGdpGrowthFromChart(index, value);
                             }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    const growthPct = ctx.parsed.y;
+                                    // Calculate GDP at this year
+                                    const yearIndex = ctx.dataIndex;
+                                    let gdp = INITIAL_GDP; // In trillions
+                                    const growthData = ctx.chart.data.datasets[0].data;
+                                    for (let i = 0; i < yearIndex; i++) {
+                                        gdp = gdp * (1 + growthData[i] / 100);
+                                    }
+                                    return `${growthPct.toFixed(1)}% (GDP: $${Math.round(gdp)}T)`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -1702,7 +1891,7 @@
                                 const data = scale.chart.data.datasets[0].data;
                                 if (data && data.length > 0) {
                                     const maxVal = Math.max(...data);
-                                    scale.max = Math.max(10, maxVal * 1.2);
+                                    scale.max = Math.max(10, maxVal * 1.3);
                                 }
                             }
                         }
@@ -1826,7 +2015,7 @@
         function syncGdpGrowthFromChart(index, value) {
             // Store the current chart data as custom data
             customGdpGrowthData = [...chartGdpGrowthInput.data.datasets[0].data];
-            customGdpGrowthData[index] = Math.max(0.5, Math.min(10, value));
+            customGdpGrowthData[index] = Math.max(0.5, value);
             updateCustomIndicators();
             updateCharts();
         }

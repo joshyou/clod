@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Daylight Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #B0C4DE 50%, #FFB366 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .current-day {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .current-day h2 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 12px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-label {
+            font-size: 0.75em;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .date-picker {
+            padding: 12px 20px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .comparison-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .city-select-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .city-select-group label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .chart-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .year-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .month-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .month-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .month-stat {
+            font-size: 0.9em;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .month-stat strong {
+            color: #333;
+        }
+
+        .settings {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .setting-item label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1em;
+            color: #333;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .slider-container label {
+            color: #333;
+            font-weight: 500;
+            min-width: 120px;
+        }
+
+        .time-window-slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .time-window-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .time-window-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            min-width: 100px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 26px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌅 <span id="cityName">NYC</span> Daylight Tracker</h1>
+        <p class="subtitle">Track sunrise, sunset, and day length for <span id="cityFullName">New York City</span></p>
+
+        <div class="current-day" id="currentDay">
+            <h2 id="currentDate">Loading...</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-label">Sunrise</div>
+                    <div class="stat-value" id="sunrise">--:--</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Sunset</div>
+                    <div class="stat-value" id="sunset">--:--</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Day Length</div>
+                    <div class="stat-value" id="dayLength">-- hrs</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <input type="date" id="datePicker" class="date-picker">
+            <button onclick="updateForDate()">Update</button>
+            <button onclick="showToday()">Today</button>
+            <button onclick="showYearView()">Show Year View</button>
+        </div>
+
+        <div class="controls">
+            <select id="citySelector" class="date-picker" onchange="selectCity()">
+                <option value="nyc">New York City</option>
+                <option value="london">London</option>
+                <option value="sf">San Francisco</option>
+                <option value="sanjuan">San Juan, PR</option>
+                <option value="minneapolis">Minneapolis</option>
+                <option value="mexicocity">Mexico City</option>
+                <option value="buenosaires">Buenos Aires</option>
+                <option value="atlanta">Atlanta</option>
+                <option value="custom">Custom (Search)</option>
+            </select>
+            <input type="text" id="citySearch" class="date-picker" placeholder="Search for a city..." style="display:none;">
+            <button id="searchButton" onclick="searchCity()" style="display:none;">Search</button>
+        </div>
+
+        <div class="settings">
+            <div class="setting-item">
+                <div class="slider-container">
+                    <label for="timeWindowSlider">Time Window:</label>
+                    <input type="range" id="timeWindowSlider" class="time-window-slider" min="1" max="12" value="12" step="1" oninput="updateTimeWindow()">
+                    <span class="slider-value" id="timeWindowValue">12 months</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">Annual Daylight Pattern</h3>
+            <canvas id="daylightChart"></canvas>
+        </div>
+
+        <div class="chart-container">
+            <h3 class="chart-title">City Comparison</h3>
+            <div class="comparison-controls">
+                <div class="city-select-group">
+                    <label for="compareCity1">City 1:</label>
+                    <select id="compareCity1" class="date-picker" onchange="createComparisonChart()">
+                        <option value="nyc" selected>New York City</option>
+                        <option value="london">London</option>
+                        <option value="sf">San Francisco</option>
+                        <option value="sanjuan">San Juan, PR</option>
+                        <option value="minneapolis">Minneapolis</option>
+                        <option value="mexicocity">Mexico City</option>
+                        <option value="buenosaires">Buenos Aires</option>
+                        <option value="atlanta">Atlanta</option>
+                    </select>
+                </div>
+                <div class="city-select-group">
+                    <label for="compareCity2">City 2:</label>
+                    <select id="compareCity2" class="date-picker" onchange="createComparisonChart()">
+                        <option value="nyc">New York City</option>
+                        <option value="london" selected>London</option>
+                        <option value="sf">San Francisco</option>
+                        <option value="sanjuan">San Juan, PR</option>
+                        <option value="minneapolis">Minneapolis</option>
+                        <option value="mexicocity">Mexico City</option>
+                        <option value="buenosaires">Buenos Aires</option>
+                        <option value="atlanta">Atlanta</option>
+                    </select>
+                </div>
+            </div>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+
+        <div class="year-view" id="yearView"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // City database with coordinates and timezones
+        const cities = {
+            nyc: {
+                name: 'NYC',
+                fullName: 'New York City',
+                lat: 40.7128,
+                lng: -74.0060,
+                timezone: 'America/New_York'
+            },
+            london: {
+                name: 'London',
+                fullName: 'London',
+                lat: 51.5074,
+                lng: -0.1278,
+                timezone: 'Europe/London'
+            },
+            sf: {
+                name: 'SF',
+                fullName: 'San Francisco',
+                lat: 37.7749,
+                lng: -122.4194,
+                timezone: 'America/Los_Angeles'
+            },
+            sanjuan: {
+                name: 'San Juan',
+                fullName: 'San Juan, PR',
+                lat: 18.4655,
+                lng: -66.1057,
+                timezone: 'America/Puerto_Rico'
+            },
+            minneapolis: {
+                name: 'Minneapolis',
+                fullName: 'Minneapolis',
+                lat: 44.9778,
+                lng: -93.2650,
+                timezone: 'America/Chicago'
+            },
+            mexicocity: {
+                name: 'Mexico City',
+                fullName: 'Mexico City',
+                lat: 19.4326,
+                lng: -99.1332,
+                timezone: 'America/Mexico_City'
+            },
+            buenosaires: {
+                name: 'Buenos Aires',
+                fullName: 'Buenos Aires',
+                lat: -34.6037,
+                lng: -58.3816,
+                timezone: 'America/Argentina/Buenos_Aires'
+            },
+            atlanta: {
+                name: 'Atlanta',
+                fullName: 'Atlanta',
+                lat: 33.7490,
+                lng: -84.3880,
+                timezone: 'America/New_York'
+            }
+        };
+
+        let currentCity = cities.nyc;
+        let chart = null;
+        let comparisonChart = null;
+        let timeWindowMonths = 12;
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+                timeZone: currentCity.timezone
+            });
+        }
+
+        function formatDuration(hours) {
+            const h = Math.floor(hours);
+            const m = Math.round((hours - h) * 60);
+            return `${h}h ${m}m`;
+        }
+
+        function getHoursInTimezone(date) {
+            // Convert UTC date to current city's time and extract hours + minutes as decimal
+            const timeString = date.toLocaleString('en-US', {
+                timeZone: currentCity.timezone,
+                hour: 'numeric',
+                minute: 'numeric',
+                hour12: false
+            });
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours + minutes / 60;
+        }
+
+        function calculateSunTimes(date) {
+            const times = SunCalc.getTimes(date, currentCity.lat, currentCity.lng);
+            const sunrise = times.sunrise;
+            const sunset = times.sunset;
+            const dayLength = (sunset - sunrise) / (1000 * 60 * 60); // Convert to hours
+
+            return {
+                sunrise,
+                sunset,
+                dayLength,
+                sunriseHours: getHoursInTimezone(sunrise),
+                sunsetHours: getHoursInTimezone(sunset)
+            };
+        }
+
+        function updateDisplay(date) {
+            const times = calculateSunTimes(date);
+
+            document.getElementById('currentDate').textContent = date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            document.getElementById('sunrise').textContent = formatTime(times.sunrise);
+            document.getElementById('sunset').textContent = formatTime(times.sunset);
+            document.getElementById('dayLength').textContent = formatDuration(times.dayLength);
+        }
+
+        function updateForDate() {
+            const dateInput = document.getElementById('datePicker').value;
+            if (dateInput) {
+                const date = new Date(dateInput + 'T12:00:00');
+                updateDisplay(date);
+            }
+        }
+
+        function showToday() {
+            const today = new Date();
+            document.getElementById('datePicker').value = today.toISOString().split('T')[0];
+            updateDisplay(today);
+        }
+
+        function updateTimeWindow() {
+            const slider = document.getElementById('timeWindowSlider');
+            timeWindowMonths = parseInt(slider.value);
+            document.getElementById('timeWindowValue').textContent =
+                timeWindowMonths === 1 ? '1 month' : `${timeWindowMonths} months`;
+            createChart();
+            createComparisonChart();
+        }
+
+        function createChart() {
+            const ctx = document.getElementById('daylightChart').getContext('2d');
+
+            const currentDate = new Date();
+            const dates = [];
+            const sunriseData = [];
+            const sunsetData = [];
+            const dayLengthData = [];
+
+            // Calculate start date: go back half the window from today
+            const daysToShow = timeWindowMonths * 30; // Approximate days
+            const halfWindow = Math.floor(daysToShow / 2);
+
+            const startDate = new Date(currentDate);
+            startDate.setDate(startDate.getDate() - halfWindow);
+
+            const endDate = new Date(currentDate);
+            endDate.setDate(endDate.getDate() + halfWindow);
+
+            // Determine day step to show ~100 data points, but no less than 1 day
+            const targetDataPoints = 100;
+            const dayStep = Math.max(1, Math.floor(daysToShow / targetDataPoints));
+
+            // Generate data points from start to end date
+            let iterDate = new Date(startDate);
+            while (iterDate <= endDate) {
+                const times = calculateSunTimes(iterDate);
+
+                dates.push(iterDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+                sunriseData.push(times.sunriseHours);
+                sunsetData.push(times.sunsetHours);
+                dayLengthData.push(times.dayLength);
+
+                iterDate.setDate(iterDate.getDate() + dayStep);
+            }
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            // Plugin to add vertical line for current date
+            const currentDatePlugin = {
+                id: 'currentDateLine',
+                afterDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const chartArea = chart.chartArea;
+                    const xAxis = chart.scales.x;
+
+                    // Find the current date in the data
+                    const today = new Date();
+                    const todayString = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+                    // Find index of today's date in labels
+                    const todayIndex = chart.data.labels.findIndex(label => label === todayString);
+
+                    if (todayIndex !== -1) {
+                        const x = xAxis.getPixelForValue(todayIndex);
+
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(220, 50, 50, 0.7)';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([5, 5]);
+                        ctx.beginPath();
+                        ctx.moveTo(x, chartArea.top);
+                        ctx.lineTo(x, chartArea.bottom);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            };
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'Sunrise',
+                            data: sunriseData,
+                            borderColor: '#FF6B35',
+                            backgroundColor: 'rgba(255, 107, 53, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y',
+                            borderWidth: 2.5,
+                            pointRadius: 1.5,
+                            pointHitRadius: 8
+                        },
+                        {
+                            label: 'Sunset',
+                            data: sunsetData,
+                            borderColor: '#4A5899',
+                            backgroundColor: 'rgba(74, 88, 153, 0.1)',
+                            tension: 0.4,
+                            yAxisID: 'y',
+                            borderWidth: 2.5,
+                            pointRadius: 1.5,
+                            pointHitRadius: 8
+                        },
+                        {
+                            label: 'Day Length',
+                            data: dayLengthData,
+                            borderColor: '#F4A259',
+                            backgroundColor: 'rgba(244, 162, 89, 0.15)',
+                            tension: 0.4,
+                            yAxisID: 'y1',
+                            borderWidth: 2.5,
+                            pointRadius: 1.5,
+                            pointHitRadius: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    backgroundColor: 'white',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.datasetIndex === 2) {
+                                        // Day Length - show as duration
+                                        const hours = context.parsed.y;
+                                        const h = Math.floor(hours);
+                                        const m = Math.round((hours - h) * 60);
+                                        label += `${h}h ${m}m`;
+                                    } else {
+                                        // Sunrise/Sunset - convert decimal hours to HH:MM AM/PM
+                                        const decimalHours = context.parsed.y;
+                                        let hours24 = Math.floor(decimalHours);
+                                        let minutes = Math.round((decimalHours - hours24) * 60);
+
+                                        // Handle edge case where rounding gives 60 minutes
+                                        if (minutes === 60) {
+                                            hours24 += 1;
+                                            minutes = 0;
+                                        }
+
+                                        // Convert to 12-hour format
+                                        const ampm = hours24 >= 12 ? 'PM' : 'AM';
+                                        let hours12 = hours24 % 12;
+                                        if (hours12 === 0) hours12 = 12;
+
+                                        label += `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            min: 3,
+                            max: 22,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawOnChartArea: true
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    const hours24 = Math.floor(value);
+                                    let hours12 = hours24 % 12;
+                                    if (hours12 === 0) hours12 = 12;
+                                    const ampm = hours24 >= 12 ? 'PM' : 'AM';
+                                    return `${hours12} ${ampm}`;
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time of Day'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            min: 7,
+                            max: 17,
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatDuration(value);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Day Length'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawOnChartArea: true
+                            },
+                            ticks: {
+                                maxTicksLimit: timeWindowMonths <= 2 ? 30 : (timeWindowMonths <= 6 ? 25 : 20)
+                            }
+                        }
+                    }
+                },
+                plugins: [currentDatePlugin]
+            });
+        }
+
+        function createComparisonChart() {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+
+            const city1Key = document.getElementById('compareCity1').value;
+            const city2Key = document.getElementById('compareCity2').value;
+            const city1 = cities[city1Key];
+            const city2 = cities[city2Key];
+
+            const currentDate = new Date();
+            const dates = [];
+            const city1DayLengthData = [];
+            const city1SunriseData = [];
+            const city1SunsetData = [];
+            const city2DayLengthData = [];
+            const city2SunriseData = [];
+            const city2SunsetData = [];
+
+            // Calculate start date: go back half the window from today
+            const daysToShow = timeWindowMonths * 30;
+            const halfWindow = Math.floor(daysToShow / 2);
+
+            const startDate = new Date(currentDate);
+            startDate.setDate(startDate.getDate() - halfWindow);
+
+            const endDate = new Date(currentDate);
+            endDate.setDate(endDate.getDate() + halfWindow);
+
+            const targetDataPoints = 100;
+            const dayStep = Math.max(1, Math.floor(daysToShow / targetDataPoints));
+
+            // Generate data points
+            let iterDate = new Date(startDate);
+            while (iterDate <= endDate) {
+                // City 1
+                const times1 = SunCalc.getTimes(iterDate, city1.lat, city1.lng);
+                const dayLength1 = (times1.sunset - times1.sunrise) / (1000 * 60 * 60);
+
+                // City 2
+                const times2 = SunCalc.getTimes(iterDate, city2.lat, city2.lng);
+                const dayLength2 = (times2.sunset - times2.sunrise) / (1000 * 60 * 60);
+
+                dates.push(iterDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+
+                city1DayLengthData.push(dayLength1);
+                city1SunriseData.push(times1.sunrise);
+                city1SunsetData.push(times1.sunset);
+
+                city2DayLengthData.push(dayLength2);
+                city2SunriseData.push(times2.sunrise);
+                city2SunsetData.push(times2.sunset);
+
+                iterDate.setDate(iterDate.getDate() + dayStep);
+            }
+
+            // Calculate min and max for y-axis with some padding
+            const allDayLengths = [...city1DayLengthData, ...city2DayLengthData];
+            const minDayLength = Math.min(...allDayLengths);
+            const maxDayLength = Math.max(...allDayLengths);
+            const padding = (maxDayLength - minDayLength) * 0.1; // 10% padding
+            const yMin = Math.max(0, Math.floor(minDayLength - padding));
+            const yMax = Math.ceil(maxDayLength + padding);
+
+            if (comparisonChart) {
+                comparisonChart.destroy();
+            }
+
+            // Plugin to add vertical line for current date
+            const currentDatePlugin = {
+                id: 'currentDateLine',
+                afterDraw: (chart) => {
+                    const ctx = chart.ctx;
+                    const chartArea = chart.chartArea;
+                    const xAxis = chart.scales.x;
+
+                    const today = new Date();
+                    const todayString = today.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const todayIndex = chart.data.labels.findIndex(label => label === todayString);
+
+                    if (todayIndex !== -1) {
+                        const x = xAxis.getPixelForValue(todayIndex);
+
+                        ctx.save();
+                        ctx.strokeStyle = 'rgba(220, 50, 50, 0.7)';
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([5, 5]);
+                        ctx.beginPath();
+                        ctx.moveTo(x, chartArea.top);
+                        ctx.lineTo(x, chartArea.bottom);
+                        ctx.stroke();
+                        ctx.restore();
+                    }
+                }
+            };
+
+            comparisonChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: `${city1.fullName} - Day Length`,
+                            data: city1DayLengthData,
+                            borderColor: '#4A90E2',
+                            backgroundColor: 'rgba(74, 144, 226, 0.1)',
+                            tension: 0.4,
+                            borderWidth: 2.5,
+                            pointRadius: 1.5,
+                            pointHitRadius: 8,
+                            city: city1,
+                            sunriseData: city1SunriseData,
+                            sunsetData: city1SunsetData
+                        },
+                        {
+                            label: `${city2.fullName} - Day Length`,
+                            data: city2DayLengthData,
+                            borderColor: '#E94B3C',
+                            backgroundColor: 'rgba(233, 75, 60, 0.1)',
+                            tension: 0.4,
+                            borderWidth: 2.5,
+                            pointRadius: 1.5,
+                            pointHitRadius: 8,
+                            city: city2,
+                            sunriseData: city2SunriseData,
+                            sunsetData: city2SunsetData
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    aspectRatio: 2,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    backgroundColor: 'white',
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const dataset = context.dataset;
+                                    const dataIndex = context.dataIndex;
+                                    const dayLength = context.parsed.y;
+
+                                    const h = Math.floor(dayLength);
+                                    const m = Math.round((dayLength - h) * 60);
+
+                                    // Format sunrise/sunset
+                                    const sunrise = dataset.sunriseData[dataIndex];
+                                    const sunset = dataset.sunsetData[dataIndex];
+
+                                    const sunriseStr = sunrise.toLocaleTimeString('en-US', {
+                                        hour: 'numeric',
+                                        minute: '2-digit',
+                                        hour12: true,
+                                        timeZone: dataset.city.timezone
+                                    });
+
+                                    const sunsetStr = sunset.toLocaleTimeString('en-US', {
+                                        hour: 'numeric',
+                                        minute: '2-digit',
+                                        hour12: true,
+                                        timeZone: dataset.city.timezone
+                                    });
+
+                                    return [
+                                        `${dataset.label}: ${h}h ${m}m`,
+                                        `  Sunrise: ${sunriseStr}`,
+                                        `  Sunset: ${sunsetStr}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            min: yMin,
+                            max: yMax,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawOnChartArea: true
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return formatDuration(value);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Day Length'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.1)',
+                                drawOnChartArea: true
+                            },
+                            ticks: {
+                                maxTicksLimit: timeWindowMonths <= 2 ? 30 : (timeWindowMonths <= 6 ? 25 : 20)
+                            }
+                        }
+                    }
+                },
+                plugins: [currentDatePlugin]
+            });
+        }
+
+        function showYearView() {
+            const yearViewDiv = document.getElementById('yearView');
+            yearViewDiv.innerHTML = '<h3 class="chart-title">Monthly Summary</h3>';
+
+            const currentYear = new Date().getFullYear();
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+
+            for (let month = 0; month < 12; month++) {
+                const midMonth = new Date(currentYear, month, 15, 12, 0, 0);
+                const times = calculateSunTimes(midMonth);
+
+                const card = document.createElement('div');
+                card.className = 'month-card';
+                card.innerHTML = `
+                    <h3>${monthNames[month]}</h3>
+                    <div class="month-stat"><strong>Sunrise:</strong> ${formatTime(times.sunrise)}</div>
+                    <div class="month-stat"><strong>Sunset:</strong> ${formatTime(times.sunset)}</div>
+                    <div class="month-stat"><strong>Day Length:</strong> ${formatDuration(times.dayLength)}</div>
+                `;
+                yearViewDiv.appendChild(card);
+            }
+        }
+
+        function selectCity() {
+            const selector = document.getElementById('citySelector');
+            const searchInput = document.getElementById('citySearch');
+            const searchButton = document.getElementById('searchButton');
+            const selectedValue = selector.value;
+
+            if (selectedValue === 'custom') {
+                searchInput.style.display = 'inline-block';
+                searchButton.style.display = 'inline-block';
+            } else {
+                searchInput.style.display = 'none';
+                searchButton.style.display = 'none';
+
+                currentCity = cities[selectedValue];
+                updateCityDisplay();
+                refreshAll();
+            }
+        }
+
+        async function searchCity() {
+            const searchInput = document.getElementById('citySearch');
+            const cityName = searchInput.value.trim();
+
+            if (!cityName) {
+                alert('Please enter a city name');
+                return;
+            }
+
+            try {
+                // Use OpenStreetMap Nominatim API for geocoding
+                const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(cityName)}&format=json&limit=1`);
+                const data = await response.json();
+
+                if (data && data.length > 0) {
+                    const result = data[0];
+                    currentCity = {
+                        name: cityName,
+                        fullName: result.display_name,
+                        lat: parseFloat(result.lat),
+                        lng: parseFloat(result.lon),
+                        timezone: 'UTC' // Default to UTC for custom cities
+                    };
+
+                    // Try to detect timezone based on coordinates
+                    const timezoneGuess = guessTimezone(currentCity.lat, currentCity.lng);
+                    if (timezoneGuess) {
+                        currentCity.timezone = timezoneGuess;
+                    }
+
+                    updateCityDisplay();
+                    refreshAll();
+                } else {
+                    alert('City not found. Please try a different search term.');
+                }
+            } catch (error) {
+                alert('Error searching for city. Please try again.');
+                console.error(error);
+            }
+        }
+
+        function guessTimezone(lat, lng) {
+            // Simple timezone guessing based on longitude
+            // This is approximate - for accurate results, would need a timezone API
+            const timezones = [
+                { min: -180, max: -165, tz: 'Pacific/Samoa' },
+                { min: -165, max: -135, tz: 'America/Anchorage' },
+                { min: -135, max: -120, tz: 'America/Los_Angeles' },
+                { min: -120, max: -105, tz: 'America/Denver' },
+                { min: -105, max: -90, tz: 'America/Chicago' },
+                { min: -90, max: -75, tz: 'America/New_York' },
+                { min: -75, max: -60, tz: 'America/Caracas' },
+                { min: -60, max: -30, tz: 'America/Sao_Paulo' },
+                { min: -30, max: 0, tz: 'Atlantic/Azores' },
+                { min: 0, max: 15, tz: 'Europe/London' },
+                { min: 15, max: 30, tz: 'Europe/Paris' },
+                { min: 30, max: 45, tz: 'Europe/Moscow' },
+                { min: 45, max: 75, tz: 'Asia/Dubai' },
+                { min: 75, max: 105, tz: 'Asia/Bangkok' },
+                { min: 105, max: 135, tz: 'Asia/Shanghai' },
+                { min: 135, max: 165, tz: 'Asia/Tokyo' },
+                { min: 165, max: 180, tz: 'Pacific/Auckland' }
+            ];
+
+            for (const zone of timezones) {
+                if (lng >= zone.min && lng < zone.max) {
+                    return zone.tz;
+                }
+            }
+            return 'UTC';
+        }
+
+        function updateCityDisplay() {
+            document.getElementById('cityName').textContent = currentCity.name;
+            document.getElementById('cityFullName').textContent = currentCity.fullName;
+        }
+
+        function refreshAll() {
+            showToday();
+            createChart();
+            // Clear year view
+            document.getElementById('yearView').innerHTML = '';
+        }
+
+        // Initialize
+        window.onload = function() {
+            showToday();
+            createChart();
+            createComparisonChart();
+        };
+    </script>
+</body>
+</html>
