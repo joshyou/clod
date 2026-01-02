@@ -122,8 +122,22 @@
 
         .charts-panel {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 20px;
+            align-items: flex-start;
+            align-content: flex-start;
+        }
+
+        .charts-panel > .chart-container {
+            flex: 1 1 400px;
+            min-width: 300px;
+            max-width: calc(50% - 10px);
+        }
+
+        .charts-panel > .input-charts-section,
+        .charts-panel > .toggle-container {
+            flex: 1 1 100%;
+            max-width: 100%;
         }
 
         .chart-container {
@@ -424,7 +438,6 @@
         }
 
         .input-charts-section {
-            margin-bottom: 20px;
             background: #f8f9fa;
             border-radius: 12px;
             padding: 16px;
@@ -589,6 +602,10 @@
 
             .input-charts-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .charts-panel > .chart-container {
+                max-width: 100%;
             }
         }
     </style>
