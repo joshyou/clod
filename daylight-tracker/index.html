@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(to bottom, #87CEEB 0%, #B0C4DE 50%, #FFB366 100%);
+            background: linear-gradient(to bottom, #1a3a5c 0%, #4a6fa5 30%, #e8a87c 70%, #FFB366 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -40,42 +40,18 @@
         }
 
         .current-day {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             color: white;
         }
 
-        .current-day h2 {
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-        }
-
         .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        .stat {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 12px;
-            border-radius: 8px;
-            backdrop-filter: blur(10px);
-        }
-
-        .stat-label {
-            font-size: 0.75em;
-            opacity: 0.9;
-            margin-bottom: 3px;
-        }
-
-        .stat-value {
-            font-size: 1.3em;
-            font-weight: bold;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.95em;
         }
 
         .controls {
@@ -364,24 +340,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>🌅 Daylight Tracker</h1>
-        <p class="subtitle">Track sunrise, sunset, and day length for <span id="cityFullName">New York City</span></p>
+        <h1 style="font-size: 1.8em; margin-bottom: 15px; color: #333;">🌅 Daylight Tracker</h1>
+        <span id="cityFullName" style="display: none;">New York City</span>
 
         <div class="current-day" id="currentDay">
-            <h2 id="currentDate">Loading...</h2>
             <div class="stats">
-                <div class="stat">
-                    <div class="stat-label">Sunrise</div>
-                    <div class="stat-value" id="sunrise">--:--</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Sunset</div>
-                    <div class="stat-value" id="sunset">--:--</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Day Length</div>
-                    <div class="stat-value" id="dayLength">-- hrs</div>
-                </div>
+                <span id="currentDate" style="font-weight: 500;"></span>
+                <span style="margin: 0 10px; opacity: 0.6;">·</span>
+                <span>☀️ <span id="sunrise">--:--</span></span>
+                <span style="margin: 0 10px; opacity: 0.6;">·</span>
+                <span>🌙 <span id="sunset">--:--</span></span>
+                <span style="margin: 0 10px; opacity: 0.6;">·</span>
+                <span id="dayLength">-- hrs</span>
             </div>
         </div>
 
@@ -401,36 +371,34 @@
             <button id="searchButton" onclick="searchCity()" style="display:none;">Search</button>
         </div>
 
-        <div class="settings">
-            <div class="setting-item">
-                <div class="slider-container">
-                    <label for="timeWindowSlider">Time Window:</label>
-                    <input type="range" id="timeWindowSlider" class="time-window-slider" min="1" max="12" value="6" step="1" oninput="updateTimeWindow()">
-                    <span class="slider-value" id="timeWindowValue">6 months</span>
-                </div>
-            </div>
-            <div class="setting-item">
-                <label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="showSunriseSunset" checked onchange="updateChartVisibility()">
-                        <span class="slider"></span>
-                    </label>
-                    Show Sunrise/Sunset
-                </label>
-                <label>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="showDayLength" checked onchange="updateChartVisibility()">
-                        <span class="slider"></span>
-                    </label>
-                    Show Day Length
-                </label>
-                <button onclick="showYearView()" style="margin-left: auto;">Show Year View</button>
-            </div>
-        </div>
-
         <div class="chart-container">
             <h3 class="chart-title">Annual Daylight Pattern</h3>
             <canvas id="daylightChart"></canvas>
+            <div class="settings" style="margin-top: 20px; margin-bottom: 0;">
+                <div class="setting-item">
+                    <div class="slider-container">
+                        <label for="timeWindowSlider">Time Window:</label>
+                        <input type="range" id="timeWindowSlider" class="time-window-slider" min="1" max="12" value="6" step="1" oninput="updateTimeWindow()">
+                        <span class="slider-value" id="timeWindowValue">6 months</span>
+                    </div>
+                </div>
+                <div class="setting-item" style="margin-bottom: 0;">
+                    <label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showSunriseSunset" checked onchange="updateChartVisibility()">
+                            <span class="slider"></span>
+                        </label>
+                        Show Sunrise/Sunset
+                    </label>
+                    <label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="showDayLength" onchange="updateChartVisibility()">
+                            <span class="slider"></span>
+                        </label>
+                        Show Day Length
+                    </label>
+                </div>
+            </div>
         </div>
 
         <div class="chart-container">
@@ -630,6 +598,7 @@
             document.getElementById('timeWindowValue').textContent =
                 timeWindowMonths === 1 ? '1 month' : `${timeWindowMonths} months`;
             createChart();
+            updateChartVisibility(); // Preserve visibility settings after recreating chart
             createComparisonChart();
         }
 
@@ -809,6 +778,14 @@
                                         label += `${hours12}:${minutes.toString().padStart(2, '0')} ${ampm}`;
                                     }
                                     return label;
+                                },
+                                afterBody: function(context) {
+                                    // Always show day length in tooltip
+                                    const dataIndex = context[0].dataIndex;
+                                    const dayLength = context[0].chart.data.datasets[2].data[dataIndex];
+                                    const h = Math.floor(dayLength);
+                                    const m = Math.round((dayLength - h) * 60);
+                                    return `Day Length: ${h}h ${m}m`;
                                 }
                             }
                         }
@@ -821,7 +798,7 @@
                             min: 3,
                             max: 22,
                             grid: {
-                                display: false,
+                                display: true,
                                 color: 'rgba(0, 0, 0, 0.1)',
                                 drawOnChartArea: true
                             },
@@ -1386,6 +1363,16 @@
             // Build stats HTML
             let statsHTML = '<div class="trip-stats-container">';
 
+            // Helper to format time for a specific city
+            function formatTimeForCity(date, city) {
+                return date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                    timeZone: city.timezone
+                });
+            }
+
             // City 1 stats
             statsHTML += `
                 <div class="trip-stat-card">
@@ -1395,8 +1382,16 @@
                         <span class="trip-stat-value">${formatDuration(city1StartDaylight)}</span>
                     </div>
                     <div class="trip-stat-row">
+                        <span class="trip-stat-label" style="padding-left: 12px;">Sunrise / Sunset</span>
+                        <span class="trip-stat-value">${formatTimeForCity(city1StartTimes.sunrise, city1)} / ${formatTimeForCity(city1StartTimes.sunset, city1)}</span>
+                    </div>
+                    <div class="trip-stat-row">
                         <span class="trip-stat-label">Trip End (${tripEndDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})</span>
                         <span class="trip-stat-value">${formatDuration(city1EndDaylight)}</span>
+                    </div>
+                    <div class="trip-stat-row">
+                        <span class="trip-stat-label" style="padding-left: 12px;">Sunrise / Sunset</span>
+                        <span class="trip-stat-value">${formatTimeForCity(city1EndTimes.sunrise, city1)} / ${formatTimeForCity(city1EndTimes.sunset, city1)}</span>
                     </div>
                     <div class="trip-stat-row">
                         <span class="trip-stat-label">Average Daylight</span>
@@ -1418,8 +1413,16 @@
                         <span class="trip-stat-value">${formatDuration(city2StartDaylight)}</span>
                     </div>
                     <div class="trip-stat-row">
+                        <span class="trip-stat-label" style="padding-left: 12px;">Sunrise / Sunset</span>
+                        <span class="trip-stat-value">${formatTimeForCity(city2StartTimes.sunrise, city2)} / ${formatTimeForCity(city2StartTimes.sunset, city2)}</span>
+                    </div>
+                    <div class="trip-stat-row">
                         <span class="trip-stat-label">Trip End (${tripEndDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})</span>
                         <span class="trip-stat-value">${formatDuration(city2EndDaylight)}</span>
+                    </div>
+                    <div class="trip-stat-row">
+                        <span class="trip-stat-label" style="padding-left: 12px;">Sunrise / Sunset</span>
+                        <span class="trip-stat-value">${formatTimeForCity(city2EndTimes.sunrise, city2)} / ${formatTimeForCity(city2EndTimes.sunset, city2)}</span>
                     </div>
                     <div class="trip-stat-row">
                         <span class="trip-stat-label">Average Daylight</span>
@@ -1461,7 +1464,12 @@
         window.onload = function() {
             showToday();
             createChart();
+            updateChartVisibility(); // Apply default visibility (day length hidden)
             createComparisonChart();
+
+            // Enable trip planning by default
+            document.getElementById('enableTripPlanning').checked = true;
+            toggleTripPlanning();
         };
     </script>
 </body>
